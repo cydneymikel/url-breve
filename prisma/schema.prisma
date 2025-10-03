@@ -1,0 +1,42 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model Shorten {
+    id       String  @id @default(uuid())
+    short    String  @unique @db.VarChar(10)
+    original String  @db.Text
+    alias    String? @unique @db.VarChar(50)
+
+    // Metadata
+    created DateTime  @default(now())
+    expires DateTime?
+    active  Boolean   @default(true)
+
+    // Relations
+    clicks Click[]
+
+    @@index([short])
+    @@index([alias])
+    @@index([created])
+    @@index([expires])
+    @@map("shorten")
+}
+
+model Click {
+    id        String   @id @default(uuid())
+    urlId     String
+    timestamp DateTime @default(now())
+
+    // Relations
+    url Shorten @relation(fields: [urlId], references: [id], onDelete: Cascade)
+
+    @@index([urlId])
+    @@index([timestamp])
+    @@map("clicks")
+}
