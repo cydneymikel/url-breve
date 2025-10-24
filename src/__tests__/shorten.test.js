@@ -1,29 +1,27 @@
-import { describe, test, expect, jest, beforeEach } from '@jest/globals';
+import { describe, test, expect, vi, beforeEach } from 'vitest';
 import request from 'supertest';
 
-// Mock database with proper ES module support
+// mock db with ES module support
 const mockDatabase = {
-    connect: jest.fn(),
-    disconnect: jest.fn(),
-    createUrl: jest.fn(),
-    findUrlForRedirect: jest.fn(),
-    shortCodeExists: jest.fn(),
-    aliasExists: jest.fn(),
-    recordClick: jest.fn(),
-    shortenCount: jest.fn(),
-    clickCount: jest.fn()
+    connect: vi.fn(),
+    disconnect: vi.fn(),
+    createUrl: vi.fn(),
+    findUrlForRedirect: vi.fn(),
+    shortCodeExists: vi.fn(),
+    aliasExists: vi.fn(),
+    recordClick: vi.fn(),
+    shortenCount: vi.fn(),
+    clickCount: vi.fn()
 };
 
-jest.unstable_mockModule('../db/client.js', () => ({ default: mockDatabase }));
+vi.mock('../db/client.js', () => ({ default: mockDatabase }));
 
-// Import after mocking
 const { default: createApp } = await import('../app.js');
 const app = createApp();
 
 describe('POST /shorten', () => {
     beforeEach(() => {
-        jest.clearAllMocks();
-        // Default: no collisions
+        vi.clearAllMocks();
         mockDatabase.shortCodeExists.mockResolvedValue(false);
         mockDatabase.aliasExists.mockResolvedValue(false);
     });
@@ -39,9 +37,7 @@ describe('POST /shorten', () => {
             active: true
         });
 
-        const response = await request(app)
-            .post('/shorten')
-            .send({ original: 'https://example.com' });
+        const response = await request(app).post('/shorten').send({ original: 'https://example.com' });
 
         expect(response.status).toBe(201);
         expect(response.body.success).toBe(true);
@@ -50,7 +46,6 @@ describe('POST /shorten', () => {
     });
 
     test('should create short URL with custom alias', async () => {
-        // Ensure alias doesn't exist and short code doesn't collide
         mockDatabase.aliasExists.mockResolvedValue(false);
         mockDatabase.shortCodeExists.mockResolvedValue(false);
 
@@ -64,12 +59,10 @@ describe('POST /shorten', () => {
             active: true
         });
 
-        const response = await request(app)
-            .post('/shorten')
-            .send({
-                original: 'https://example.com',
-                alias: 'mylink'
-            });
+        const response = await request(app).post('/shorten').send({
+            original: 'https://example.com',
+            alias: 'mylink'
+        });
 
         if (response.status !== 201) {
             console.log('Response body:', response.body);
@@ -80,9 +73,7 @@ describe('POST /shorten', () => {
     });
 
     test('should return 400 for invalid URL', async () => {
-        const response = await request(app)
-            .post('/shorten')
-            .send({ original: 'not-a-url' });
+        const response = await request(app).post('/shorten').send({ original: 'not-a-url' });
 
         expect(response.status).toBe(400);
         expect(response.body.success).toBe(false);
@@ -90,15 +81,12 @@ describe('POST /shorten', () => {
     });
 
     test('should return 409 for duplicate alias', async () => {
-        // Mock alias exists
         mockDatabase.aliasExists.mockResolvedValue(true);
 
-        const response = await request(app)
-            .post('/shorten')
-            .send({
-                original: 'https://example.com',
-                alias: 'taken'
-            });
+        const response = await request(app).post('/shorten').send({
+            original: 'https://example.com',
+            alias: 'taken'
+        });
 
         expect(response.status).toBe(409);
         expect(response.body.success).toBe(false);
