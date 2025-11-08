@@ -1,13 +1,10 @@
 import { z } from 'zod';
+
 import config from '../util/env.js';
 
-// Shared regex for aliases/shortcodes
 const SHORTCODE_REGEX = /^[a-zA-Z0-9_-]+$/;
-
-// Reserved keywords that cannot be used as aliases
 const RESERVED_KEYWORDS = ['api', 'admin', 'analytics', 'stats', 'dashboard', 'health', 'status'];
 
-// Schema for URL shortening request
 const shortenSchema = z.object({
     original: z
         .string({ message: 'URL is required and must be a string' })
@@ -40,9 +37,8 @@ const shortenSchema = z.object({
         .optional()
 });
 
-// Schema for validating short code params
-const shortcodeSchema = z.object({
-    shortcode: z
+const shortCodeSchema = z.object({
+    shortCode: z
         .string()
         .max(50, 'Short code must be max 50 characters')
         .regex(SHORTCODE_REGEX, 'Invalid short code format')
@@ -76,6 +72,6 @@ const zodMiddleware =
 const validateShortURL = zodMiddleware(shortenSchema, 'body');
 
 /** Middleware to validate short code parameter */
-const validateShortCode = zodMiddleware(shortcodeSchema, 'params');
+const validateShortCode = zodMiddleware(shortCodeSchema, 'params');
 
 export { validateShortURL, validateShortCode };

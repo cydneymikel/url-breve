@@ -22,7 +22,7 @@ router.get('/', (req, res) => {
 });
 
 /**
- * GET /status
+ * GET /health/status
  * Service information + aggregate statistics
  */
 router.get(

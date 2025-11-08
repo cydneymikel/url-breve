@@ -1,22 +1,14 @@
-/**
- * Server Entry Point
- * Initializes the application and starts the server
- */
-
 import createApp from './src/app.js';
+
 import config from './src/util/env.js';
 import logger from './src/util/logger.js';
 import client from './src/db/client.js';
 
-/**
- * Initialize and start the server
- */
 const startServer = async () => {
     try {
-        logger.info('Starting URL Reductio server...');
+        logger.info('Starting URL Breve server...');
         logger.info({ env: config.nodeEnv }, 'Environment');
 
-        logger.info('Connecting to database...');
         await client.connect();
 
         const app = createApp();

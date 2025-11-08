@@ -31,7 +31,11 @@ const config = {
     port: optional('PORT', 3000),
     nodeEnv: optional('NODE_ENV', 'development'),
     baseUrl: required('BASE_URL'),
+
+    // Database configuration
+    dbAdapter: optional('DB_ADAPTER', 'postgres'), // 'postgres' or 'mongo'
     databaseUrl: required('DATABASE_URL'),
+
     shortCodeLength: optional('SHORT_CODE_LENGTH', 7),
     maxRetries: optional('MAX_COLLISION_RETRIES', 5),
     rateLimit: {

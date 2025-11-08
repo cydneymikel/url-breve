@@ -34,7 +34,7 @@ const errorHandler = (err, req, res, next) => {
         error: clientMessage
     };
 
-    // include stack trace only in development
+    // stack trace only in development
     if (config.nodeEnv === 'development') {
         response.stack = err.stack;
     }

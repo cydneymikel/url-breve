@@ -7,7 +7,7 @@ import client from '../db/client.js';
 import { AppError } from '../util/error.js';
 
 /**
- * custom nanoid with URL-safe characters (excluding ambiguous characters)
+ * custom nanoid with URL-safe characters
  * excludes: 0, O, I, l to avoid confusion
  */
 const nanoid = customAlphabet('123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz', config.shortCodeLength);
@@ -56,11 +56,8 @@ const generateShortUrl = (short) => {
 const shortenUrl = async (data) => {
     const { original, alias, expires } = data;
 
-    // handle custom alias
     let short;
     if (alias) {
-        // validation already handled by Zod middleware
-        // just check if alias already exists
         const aliasExists = await client.aliasExists(alias);
         if (aliasExists) {
             throw new AppError('This custom alias is already taken', 409);
@@ -68,16 +65,13 @@ const shortenUrl = async (data) => {
 
         short = alias;
     } else {
-        // generate unique short code
         short = await generateShortCode();
     }
 
-    // validate expiration date
     if (expires && new Date(expires) <= new Date()) {
         throw new AppError('Expiration date must be in the future', 400);
     }
 
-    // create URL entry
     const url = await client.createUrl({
         short,
         original,
@@ -85,7 +79,6 @@ const shortenUrl = async (data) => {
         expires: expires ? new Date(expires) : null
     });
 
-    // generate short URL
     const shortUrl = generateShortUrl(short);
 
     return {
@@ -107,12 +100,10 @@ const resolveShortCode = async (short) => {
         return null;
     }
 
-    // Check if URL is active
     if (!url.active) {
         throw new AppError('This short URL has been deactivated', 410);
     }
 
-    // Check if URL has expired
     if (url.expires && new Date(url.expires) <= new Date()) {
         throw new AppError('This short URL has expired', 410);
     }

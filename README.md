@@ -1,16 +1,16 @@
 # URL Breve
 
-A simple URL shortening service built with Node.js, Express 5, and PostgreSQL. Features unique short codes, optional
-link expiration, vanity URLs, and asynchronous click tracking.
+A simple URL shortening service built with Node.js, Express 5, and PostgreSQL or MongoDB. Features unique short codes,
+optional link expiration, vanity URLs, and asynchronous click tracking.
 
 ## Tech Stack
 
 -   **Runtime & Framework:** Node.js, Express 5
--   **Database & ORM:** PostgreSQL with Prisma
+-   **Database:** PostgreSQL (Prisma) or MongoDB (Mongoose)
 -   **Validation:** Zod for schema validation
 -   **Security:** Helmet.js, express-rate-limit
 -   **Logging:** Pino
--   **Testing:** Jest
+-   **Testing:** Vitest
 -   **ID Generation:** nanoid
 
 ## Features
@@ -26,19 +26,23 @@ link expiration, vanity URLs, and asynchronous click tracking.
 ### Prerequisites
 
 -   Node.js v18+
--   PostgreSQL v12+
+-   PostgreSQL v12+ or MongoDB v4+
 
-### Installation
+### Dev Setup
 
 ```bash
-git clone <repository-url>
+git clone git@github.com:cydneymikel/url-breve.git
 cd url-breve
 
 npm install
-cp .env.example .env           # Configure DATABASE_URL, BASE_URL, PORT
+cp .env.example .env           # Configure DB_ADAPTER, DATABASE_URL, BASE_URL, PORT
 
-npm run prisma:migrate         # Apply schema to PostgreSQL
-npx prisma generate            # Generate Prisma client
+# For PostgreSQL:
+npm run prisma:migrate         # Apply schema
+npx prisma generate            # Generate client
+
+# For MongoDB:
+# Just set DB_ADAPTER=mongo and DATABASE_URL in .env
 
 npm run dev                    # Start server in development mode
 ```
@@ -80,32 +84,23 @@ Performs a 302 redirect to the original URL. Validates existence and expiration.
 
 ## Configuration
 
-| Variable              | Description                           | Required | Default |
-| --------------------- | ------------------------------------- | -------- | ------- |
-| PORT                  | Server port                           | No       | 3000    |
-| BASE_URL              | Public base URL for short links       | Yes      | -       |
-| DATABASE_URL          | PostgreSQL connection string          | Yes      | -       |
-| SHORT_CODE_LENGTH     | Generated short code length           | No       | 7       |
-| MAX_COLLISION_RETRIES | Max retries for short code collisions | No       | 5       |
+| Variable              | Description                            | Required | Default |
+| --------------------- | -------------------------------------- | -------- | ------- |
+| DB_ADAPTER            | Database adapter (`postgres`, `mongo`) | Yes      |         |
+| DATABASE_URL          | Database connection string             | Yes      | -       |
+| PORT                  | Server port                            | No       | 3000    |
+| BASE_URL              | Public base URL for short links        | Yes      | -       |
+| SHORT_CODE_LENGTH     | Generated short code length            | No       | 7       |
+| MAX_COLLISION_RETRIES | Max retries for short code collisions  | No       | 5       |
 
-## Database Schema (Prisma)
+## Database
 
-**Shorten** – Core link data: id, short, original, alias, created, expires, active
+See [DATABASE_ADAPTERS.md](DATABASE_ADAPTERS.md) for adapter details.
 
--   Indexes: Unique on `short` and `alias`
-
-**Click** – Tracking events: id, urlId, timestamp
-
--   Relationship: `urlId` → `Shorten.id`
-
-## Scripts
+## Testing
 
 ```bash
-npm start                # Production server
-npm run dev              # Development server with auto-reload
-npm run prisma:migrate   # Apply database migrations
-npm test                 # Run Jest tests
-npm run test:watch       # Jest watch mode
+npm test                 # Run tests
 npm run test:coverage    # Coverage report
 ```
 

@@ -1,7 +1,7 @@
 {
     "name": "url-breve",
-    "version": "1.1.0",
-    "description": "A simple URL shortener using Node.js, Express, and Supabase/Prisma.",
+    "version": "2.0.0",
+    "description": "A simple URL shortening service built with Node.js, Express.js and PostgreSQL or MongoDB.",
     "type": "module",
     "main": "server.js",
     "scripts": {
@@ -17,6 +17,7 @@
         "nodejs",
         "express",
         "prisma",
+        "mongo",
         "supabase",
         "url-shortener"
     ],
@@ -29,6 +30,7 @@
         "express": "^5.1.0",
         "express-rate-limit": "^8.2.1",
         "helmet": "^8.1.0",
+        "mongoose": "^8.9.3",
         "nanoid": "^5.1.6",
         "pino": "^10.1.0",
         "pino-http": "^11.0.0",
@@ -37,6 +39,7 @@
         "zod": "^4.1.12"
     },
     "devDependencies": {
+        "@vitest/coverage-v8": "^4.0.9",
         "cross-env": "^10.1.0",
         "nodemon": "^3.1.11",
         "supertest": "^7.1.4",

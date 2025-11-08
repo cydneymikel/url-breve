@@ -24,7 +24,7 @@ describe('Health Endpoints (No DB)', () => {
 
             expect(response.status).toBe(200);
             expect(response.body).toHaveProperty('success', true);
-            expect(response.body).toHaveProperty('name', 'URL Reductio');
+            expect(response.body).toHaveProperty('name', 'URL Breve');
             expect(response.body).toHaveProperty('description');
             expect(response.body).toHaveProperty('version');
             expect(response.body).toHaveProperty('endpoints');

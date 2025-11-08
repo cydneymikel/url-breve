@@ -19,7 +19,7 @@ vi.mock('../db/client.js', () => ({ default: mockDatabase }));
 const { default: createApp } = await import('../app.js');
 const app = createApp();
 
-describe('GET /:shortcode', () => {
+describe('GET /:shortCode', () => {
     beforeEach(() => {
         vi.clearAllMocks();
     });

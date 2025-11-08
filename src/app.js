@@ -18,19 +18,18 @@ const createApp = () => {
 
     app.use(
         helmet({
-            contentSecurityPolicy: false, // Disable CSP for API
+            contentSecurityPolicy: false,
             crossOriginEmbedderPolicy: false
         })
     );
 
     app.use(cors());
-
     app.use(pinoHttp({ logger }));
 
     app.use(express.json());
-    app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+    app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
-    const limiter = rateLimit({
+    const shortenLimiter = rateLimit({
         windowMs: config.rateLimit.windowMs,
         max: config.rateLimit.maxRequests,
         message: {
@@ -41,20 +40,18 @@ const createApp = () => {
         legacyHeaders: false
     });
 
-    app.use('/shorten', limiter);
+    app.use('/shorten', shortenLimiter);
 
-    // root endpoint
     app.get('/', (req, res) => {
         res.json({
             success: true,
-            name: 'URL Reductio',
+            name: 'URL Breve',
             description: 'A simple and secure URL shortening service',
             version: '1.0.0',
             endpoints: {
-                shorten: 'POST /shorten - Create a short URL',
-                redirect: 'GET /:shortCode - Redirect to original URL',
-                health: 'GET /health - Health check',
-                status: 'GET /status - Service statistics'
+                shorten: 'POST /shorten',
+                redirect: 'GET /:shortCode',
+                health: 'GET /health'
             }
         });
     });
@@ -63,10 +60,7 @@ const createApp = () => {
     app.use('/shorten', shorten);
     app.use('/', redirect);
 
-    // 404 handler
     app.use(notFoundHandler);
-
-    // Global error handler
     app.use(errorHandler);
 
     return app;

@@ -10,17 +10,16 @@ import { AppError } from '../util/error.js';
 const router = express.Router();
 
 /**
- * GET /redirect/:short
+ * GET /:shortCode
  * Redirect to original URL and track clicks
  */
 router.get(
-    '/:shortcode',
+    '/:shortCode',
     validateShortCode,
     asyncHandler(async (req, res) => {
-        const { shortcode } = req.params;
+        const { shortCode } = req.params;
 
-        // resolve short code to URL
-        const url = await resolveShortCode(shortcode);
+        const url = await resolveShortCode(shortCode);
 
         if (!url) {
             throw new AppError('Short URL not found', 404);
@@ -29,7 +28,6 @@ router.get(
         // fire and forget
         recordClick(url.id);
 
-        // perform redirect
         res.redirect(301, url.original);
     })
 );
